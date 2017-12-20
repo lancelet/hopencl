@@ -1,0 +1,7 @@
+resolver: lts-10.0
+packages:
+- examples
+# - CLGLInterop/examples
+# - CLGLInterop
+- .
+# - CLGLInterop/examples/HCLRayTrace

@@ -1,0 +1,17 @@
+sudo: false
+language: generic
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.2
+
+cache:
+  directories:
+  - $HOME/.stack
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source .travis/install-macos-tools.sh; fi
+
+script:
+  - stack --no-terminal --skip-ghc-check build

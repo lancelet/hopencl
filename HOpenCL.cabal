@@ -1,23 +1,46 @@
-name: HOpenCL
-version: 0.0
-license: AllRightsReserved
-build-type: Simple
-cabal-version: >= 1.2
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 9ab58cff7dbaf584b338551b3ab0965a03b79c0751e81079edcff9cb3cba5f18
+
+name:           HOpenCL
+version:        0.1.0.0
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    LICENSE
+    README.md
 
 library
-  exposed-modules: Language.OpenCL.Host,
-                   Language.OpenCL.Module,
-                   Language.OpenCL.Host.FFI,
-                   Language.OpenCL.Host.Constants,
-                   Language.OpenCL.Host.Core
-  build-depends: base < 5, mtl, array, parsec >= 3.1.0, syb, template-haskell
-  build-tools: hsc2hs
-  ghc-options: -threaded -O2
-
-  if os(windows)
-    extra-libraries: opencl
-
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Werror -threaded -Wincomplete-uni-patterns -Wincomplete-record-updates -Wmissing-import-lists
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , mtl
+    , parsec
+    , syb
+  if os(linux)
+    extra-libraries:
+        OpenCL
   if os(darwin)
     cpp-options: -DCALLCONV=ccall
-    cc-options: "-U__BLOCKS__"
-    Frameworks:  OpenCL
+    cc-options: -U__BLOCKS__
+    frameworks:
+        OpenCL
+  if os(windows)
+    extra-libraries:
+        opencl
+  exposed-modules:
+      Language.OpenCL.Host
+      Language.OpenCL.Host.Constants
+      Language.OpenCL.Host.Core
+      Language.OpenCL.Host.FFI
+      Language.OpenCL.Module
+  other-modules:
+      Paths_HOpenCL
+  default-language: Haskell2010

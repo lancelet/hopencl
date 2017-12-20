@@ -1,0 +1,34 @@
+name:                HOpenCL
+version:             0.1.0.0
+
+extra-source-files:
+- README.md
+- LICENSE
+
+dependencies:
+- base >= 4.7 && < 5
+- array
+- mtl
+- parsec
+- syb
+
+ghc-options:
+- -Wall
+- -Werror
+- -threaded
+- -Wincomplete-uni-patterns
+- -Wincomplete-record-updates
+- -Wmissing-import-lists
+
+when:
+  - condition: os(linux)
+    extra-libraries: OpenCL
+  - condition: os(darwin)
+    cpp-options: -DCALLCONV=ccall
+    cc-options: "-U__BLOCKS__"
+    frameworks: OpenCL
+  - condition: os(windows)
+    extra-libraries: opencl
+
+library:
+  source-dirs: src

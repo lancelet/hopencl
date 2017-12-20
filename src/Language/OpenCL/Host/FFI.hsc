@@ -12,7 +12,6 @@ import Language.OpenCL.Host.Constants
 #else
 	#include "CL/cl.h"
 #endif
-#let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 --
 -- Common Patterns
