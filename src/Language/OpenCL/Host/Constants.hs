@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 {-# LANGUAGE DeriveDataTypeable     #-}
 {-# LANGUAGE EmptyDataDecls         #-}
 {-# LANGUAGE FlexibleContexts       #-}
@@ -5,13 +6,15 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs                  #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
 {-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE UndecidableInstances   #-}
 module Language.OpenCL.Host.Constants where
 
 import           Data.Data     (Data, Typeable)
 import           Foreign       (Bits, Int32, Ptr, Word32, Word64, allocaArray,
-                                pokeArray, pokeElemOff, shiftL, (.&.), (.|.))
+                                nullPtr, pokeArray, pokeElemOff, shiftL, (.&.),
+                                (.|.))
 import           Foreign.C     (CInt, CUChar)
 import           Unsafe.Coerce (unsafeCoerce)
 
@@ -19,8 +22,8 @@ import           Unsafe.Coerce (unsafeCoerce)
 import           Prelude       (Bool, Bounded, Enum, Eq, IO, Int, Integral, Ord,
                                 Show, String, enumFromTo, error, filter, foldr,
                                 fromEnum, fromIntegral, length, maxBound,
-                                minBound, otherwise, show, ($), (+), (++), (/=),
-                                (<))
+                                minBound, null, otherwise, show, ($), (+), (++),
+                                (/=), (<))
 
 unsupported :: a
 unsupported = error "unsupported"
@@ -318,14 +321,25 @@ pushContextProperty :: ContextProperty t u
 pushContextProperty prop val (CPs cps) =
     CPs (value prop : unsafeCoerce val : cps)
 
-withContextProperties :: ContextProperties -> (Ptr CInt -> IO a) -> IO a
-withContextProperties (CPs cps) comp =
-    allocaArray (length cps + 1)
-    $ \ptr ->
-          do
-              pokeArray ptr cps
-              pokeElemOff ptr (length cps) (0 :: CInt)
-              comp ptr
+withContextProperties :: forall a. ContextProperties -> (Ptr CInt -> IO a) -> IO a
+withContextProperties (CPs cps) ioOp =
+    if null cps
+    then
+        -- If we don't have any ContextProperties, it seems to be required that
+        -- we pass this parameter as a NULL pointer.
+        ioOp nullPtr
+    else
+        let
+            runOperation :: Ptr CInt -> IO a
+            runOperation ptr = do
+                -- The context_properties array is a sequence of key-value
+                -- pairs, terminated by a zero element.
+                pokeArray ptr cps                           -- key-value pairs
+                pokeElemOff ptr (length cps) (0 :: CInt)    -- terminating zero
+                -- Run the operation.
+                ioOp ptr
+        in
+            allocaArray (length cps + 1) runOperation
 
 -- Now, I define the core properties required by the spec, of which there is
 -- one:

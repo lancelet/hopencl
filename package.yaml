@@ -15,10 +15,8 @@ dependencies:
 ghc-options:
 - -Wall
 - -Werror
-- -threaded
 - -Wincomplete-uni-patterns
 - -Wincomplete-record-updates
-- -Wmissing-import-lists
 
 when:
   - condition: os(linux)
@@ -32,3 +30,10 @@ when:
 
 library:
   source-dirs: src
+
+executables:
+  square-vector:
+    main: Main.hs
+    source-dirs: examples/square-vector
+    dependencies: [base, HOpenCL]
+    ghc-options: [-threaded]

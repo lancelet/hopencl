@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9ab58cff7dbaf584b338551b3ab0965a03b79c0751e81079edcff9cb3cba5f18
+-- hash: af7cfa0aed13ab37b28e8434a98d6c75222542f7a1eb9c72cc06e37462a0ba79
 
 name:           HOpenCL
 version:        0.1.0.0
@@ -17,7 +17,7 @@ extra-source-files:
 library
   hs-source-dirs:
       src
-  ghc-options: -Wall -Werror -threaded -Wincomplete-uni-patterns -Wincomplete-record-updates -Wmissing-import-lists
+  ghc-options: -Wall -Werror -Wincomplete-uni-patterns -Wincomplete-record-updates
   build-depends:
       array
     , base >=4.7 && <5
@@ -41,6 +41,33 @@ library
       Language.OpenCL.Host.Core
       Language.OpenCL.Host.FFI
       Language.OpenCL.Module
+  other-modules:
+      Paths_HOpenCL
+  default-language: Haskell2010
+
+executable square-vector
+  main-is: Main.hs
+  hs-source-dirs:
+      examples/square-vector
+  ghc-options: -Wall -Werror -Wincomplete-uni-patterns -Wincomplete-record-updates -threaded
+  build-depends:
+      HOpenCL
+    , array
+    , base
+    , mtl
+    , parsec
+    , syb
+  if os(linux)
+    extra-libraries:
+        OpenCL
+  if os(darwin)
+    cpp-options: -DCALLCONV=ccall
+    cc-options: -U__BLOCKS__
+    frameworks:
+        OpenCL
+  if os(windows)
+    extra-libraries:
+        opencl
   other-modules:
       Paths_HOpenCL
   default-language: Haskell2010

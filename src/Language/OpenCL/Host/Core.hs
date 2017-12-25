@@ -5,6 +5,7 @@
 -- {-# LANGUAGE OverlappingInstances      #-}
 {-# LANGUAGE ScopedTypeVariables       #-}
 {-# LANGUAGE TypeSynonymInstances      #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
 module Language.OpenCL.Host.Core where
 
 import           Language.OpenCL.Host.Constants (BitSet, CLEventCallback,
